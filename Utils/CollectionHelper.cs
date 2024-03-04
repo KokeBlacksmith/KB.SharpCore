@@ -1,28 +1,27 @@
 ﻿using System.Collections;
-using System.Linq;
 
 namespace KB.SharpCore.Utils;
 
 public static class CollectionHelper
 {
-    public static bool IsEmpty(ICollection? enumerable)
+    public static bool IsNullOrEmpty(ICollection? enumerable)
     {
         return enumerable == null || enumerable.Count == 0;
     }
     
     public static bool HasAny(ICollection? enumerable)
     {
-        return !CollectionHelper.IsEmpty(enumerable);
+        return !CollectionHelper.IsNullOrEmpty(enumerable);
     }
 
-    public static bool IsEmpty<T>(IEnumerable<T>? enumerable)
+    public static bool IsNullOrEmpty<T>(IEnumerable<T>? enumerable)
     {
         return enumerable == null || !enumerable.Any();
     }
 
     public static bool HasAny<T>(IEnumerable<T>? enumerable)
     {
-        return !CollectionHelper.IsEmpty(enumerable);
+        return !CollectionHelper.IsNullOrEmpty(enumerable);
     }
 
     public static void Dispose<T>(IEnumerable<T>? enumerable)
