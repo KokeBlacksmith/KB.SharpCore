@@ -2,6 +2,9 @@
 
 namespace KB.SharpCore.DesignPatterns.UserAction;
 
+/// <summary>
+/// Handle Do / Undo actions.
+/// </summary>
 public class UserActionInvoker
 {
     // TODO: Search for a better way to do this.
