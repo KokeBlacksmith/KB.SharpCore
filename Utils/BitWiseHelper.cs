@@ -17,6 +17,12 @@ public static class BitWiseHelper
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint RaiseFlag(uint flags, uint flag)
+    {
+        return (uint)RaiseFlag((int)flags, (int)flag);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TEnum RaiseFlag<TEnum>(TEnum enumValue, TEnum flag)
         where TEnum : Enum
     {
@@ -30,7 +36,13 @@ public static class BitWiseHelper
     {
         return flags & ~flag;
     }
-    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ClearFlag(uint flags, uint flag)
+    {
+        return (uint)ClearFlag((int)flags, (int)flag);
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TEnum ClearFlag<TEnum>(TEnum enumValue, TEnum flag)
         where TEnum : Enum
@@ -45,7 +57,13 @@ public static class BitWiseHelper
     {
         return (flags & flag) != 0;
     }
-    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool HasFlag(uint flags, uint flag)
+    {
+        return (flags & flag) != 0;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool HasFlag<TEnum>(TEnum enumValue, TEnum flag)
         where TEnum : Enum
