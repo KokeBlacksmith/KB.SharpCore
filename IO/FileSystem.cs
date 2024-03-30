@@ -19,8 +19,8 @@ public static class FileSystem
         }
 
         string directoryName = directoryPath.GetShortDirectoryName()!;
-        string finalPathString = directoryPath.FullPath.Replace(directoryName, newName);
-        System.IO.Directory.Move(directoryPath.FullPath, finalPathString);
+        string finalPathString = directoryPath.StringPath.Replace(directoryName, newName);
+        System.IO.Directory.Move(directoryPath.StringPath, finalPathString);
         Path finalPath = new Path(finalPathString);
         if (finalPath.Exists())
         {
@@ -28,7 +28,7 @@ public static class FileSystem
         }
         else
         {
-            return Result<Path>.CreateFailure($"An error occurred on renaming the directory {directoryPath.FullPath} to {finalPathString}.");
+            return Result<Path>.CreateFailure($"An error occurred on renaming the directory {directoryPath.StringPath} to {finalPathString}.");
         }
     }
     
@@ -38,12 +38,12 @@ public static class FileSystem
     {
         if (!sourceDirectoryPath.IsDirectory)
         {
-            return Result.CreateFailure($"The source path '{sourceDirectoryPath.FullPath}' is not a directory");
+            return Result.CreateFailure($"The source path '{sourceDirectoryPath.StringPath}' is not a directory");
         }
         
         if (!destinationDirectoryPath.IsDirectory)
         {
-            return Result.CreateFailure($"The destination path '{destinationDirectoryPath.FullPath}' is not a directory");
+            return Result.CreateFailure($"The destination path '{destinationDirectoryPath.StringPath}' is not a directory");
         }
         
         string? startErrorMessage = null;
@@ -59,7 +59,7 @@ public static class FileSystem
 
         if (startErrorMessage != null)
         {
-            string errorMessage = $"Error moving files from '{sourceDirectoryPath.FullPath}' to '{destinationDirectoryPath.FullPath}'.";
+            string errorMessage = $"Error moving files from '{sourceDirectoryPath.StringPath}' to '{destinationDirectoryPath.StringPath}'.";
             return Result.CreateFailure($"{startErrorMessage} {errorMessage}");
         }
         
@@ -69,7 +69,7 @@ public static class FileSystem
             foreach (string filePath in GetFilesInDirectory(sourceDirectoryPath))
             {
                 string fileName = System.IO.Path.GetFileName(filePath);
-                string destinationFilePath = System.IO.Path.Combine(destinationDirectoryPath.FullPath, fileName);
+                string destinationFilePath = System.IO.Path.Combine(destinationDirectoryPath.StringPath, fileName);
                 System.IO.File.Move(filePath, destinationFilePath);
             }
 
@@ -78,7 +78,7 @@ public static class FileSystem
             {
                 string subdirectoryName = subdirectoryPath.GetShortDirectoryName()!;
                 Path destinationSubdirectoryPath = Path.Join(destinationDirectoryPath, subdirectoryName);
-                System.IO.Directory.Move(subdirectoryPath.FullPath, destinationSubdirectoryPath.FullPath);
+                System.IO.Directory.Move(subdirectoryPath.StringPath, destinationSubdirectoryPath.StringPath);
             }
             
             return Result.CreateSuccess();
@@ -99,12 +99,12 @@ public static class FileSystem
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool DeleteDirectory(Path path, bool recursive)
     {
-        if (Directory.Exists(path.FullPath))
+        if (Directory.Exists(path.StringPath))
         {
-            Directory.Delete(path.FullPath, recursive);
+            Directory.Delete(path.StringPath, recursive);
         }
 
-        return Directory.Exists(path.FullPath);
+        return Directory.Exists(path.StringPath);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -114,10 +114,10 @@ public static class FileSystem
         {
             if (!path.IsFile)
             {
-                return Result.CreateFailure($"The path '{path.FullPath}' is not a file");
+                return Result.CreateFailure($"The path '{path.StringPath}' is not a file");
             }
 
-            File.Delete(path.FullPath);
+            File.Delete(path.StringPath);
             return Result.CreateSuccess();
         }
         catch (Exception e)
@@ -138,7 +138,7 @@ public static class FileSystem
         {
             if (overrideExisting)
             {
-                File.Delete(path.FullPath);
+                File.Delete(path.StringPath);
             }
             else
             {
@@ -146,14 +146,14 @@ public static class FileSystem
             }
         }
 
-        using FileStream fs = File.Create(path.FullPath);
+        using FileStream fs = File.Create(path.StringPath);
         return path.Exists();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<string> GetDirectories(Path path)
     {
-        return System.IO.Directory.GetDirectories(path.FullPath).Select(dir => dir + System.IO.Path.DirectorySeparatorChar);
+        return System.IO.Directory.GetDirectories(path.StringPath).Select(dir => dir + System.IO.Path.DirectorySeparatorChar);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -165,6 +165,6 @@ public static class FileSystem
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string GetRootDirectoryName(Path path)
     {
-        return Directory.GetDirectoryRoot(path.FullPath);
+        return Directory.GetDirectoryRoot(path.StringPath);
     }
 }

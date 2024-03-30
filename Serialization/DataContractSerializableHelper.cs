@@ -32,7 +32,7 @@ public static class DataContractSerializableHelper
 
         try
         {
-            using (FileStream fileStream = new FileStream(path.FullPath, FileMode.Create))
+            using (FileStream fileStream = new FileStream(path.StringPath, FileMode.Create))
             {
                 DataContractSerializer dataContractSerializer = new DataContractSerializer(typeof(T));
                 switch (serializationType)
@@ -73,12 +73,12 @@ public static class DataContractSerializableHelper
 
         if (!path.Exists())
         {
-            return Result<T>.CreateFailure($"File '{path.FullPath}' does not exist");
+            return Result<T>.CreateFailure($"File '{path.StringPath}' does not exist");
         }
         
         try
         {
-            using (FileStream fileStream = new FileStream(path.FullPath, FileMode.Create))
+            using (FileStream fileStream = new FileStream(path.StringPath, FileMode.Create))
             {
                 DataContractSerializer dataContractSerializer = new DataContractSerializer(typeof(T));
                 switch (serializationType)

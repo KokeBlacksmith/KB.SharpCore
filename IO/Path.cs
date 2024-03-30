@@ -8,8 +8,8 @@ public readonly struct Path
 
     public Path(string path)
     {
-        FullPath = path;
-        _pathType = System.IO.Path.HasExtension(FullPath) ? EPathType.File : EPathType.Directory;
+        StringPath = path;
+        _pathType = System.IO.Path.HasExtension(StringPath) ? EPathType.File : EPathType.Directory;
 
         if (!this.IsValidPath())
         {
@@ -19,13 +19,13 @@ public readonly struct Path
 
     public Path()
     {
-        FullPath = String.Empty;
+        StringPath = String.Empty;
         _pathType = EPathType.Directory;
     }
 
     public bool IsEmpty
     {
-        get { return String.IsNullOrWhiteSpace(FullPath); }
+        get { return String.IsNullOrWhiteSpace(StringPath); }
     }
 
     public bool IsFile
@@ -38,16 +38,16 @@ public readonly struct Path
         get { return _pathType == EPathType.Directory; }
     }
 
-    public string FullPath { get; }
+    public string StringPath { get; }
 
     public static string FullPathOrEmpty(Path? path)
     {
-        return path?.FullPath ?? String.Empty;
+        return path?.StringPath ?? String.Empty;
     }
     
     public bool TryGetParentDirectory(out Path? parentPath)
     {
-        DirectoryInfo? parent = Directory.GetParent(FullPath);
+        DirectoryInfo? parent = Directory.GetParent(StringPath);
         if (parent != null)
         {
             parentPath = new Path(parent.FullName);
@@ -75,13 +75,13 @@ public readonly struct Path
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Path Join(Path join1, string join2)
     {
-        return Path.Combine(join1.FullPath, join2);
+        return Path.Combine(join1.StringPath, join2);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Path Join(Path join1, Path join2)
     {
-        return Path.Combine(join1.FullPath, join2.FullPath);
+        return Path.Combine(join1.StringPath, join2.StringPath);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -93,13 +93,13 @@ public readonly struct Path
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Path Combine(params Path[] paths)
     {
-        return Path.Combine(paths.Select(p => p.FullPath).ToArray());
+        return Path.Combine(paths.Select(p => p.StringPath).ToArray());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Exists()
     {
-        return _pathType == EPathType.Directory ? Directory.Exists(FullPath) : File.Exists(FullPath);
+        return _pathType == EPathType.Directory ? Directory.Exists(StringPath) : File.Exists(StringPath);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -107,7 +107,7 @@ public readonly struct Path
     {
         try
         {
-            System.IO.Path.GetFullPath(this.FullPath);
+            System.IO.Path.GetFullPath(this.StringPath);
             return true;
         }
         catch (Exception)
@@ -119,38 +119,38 @@ public readonly struct Path
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string GetPath()
     {
-        return FullPath;
+        return StringPath;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string GetFileName()
     {
-        return _pathType == EPathType.File ? System.IO.Path.GetFileName(FullPath) : String.Empty;
+        return _pathType == EPathType.File ? System.IO.Path.GetFileName(StringPath) : String.Empty;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string? GetDirectoryName()
     {
-        return System.IO.Path.GetDirectoryName(FullPath);
+        return System.IO.Path.GetDirectoryName(StringPath);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string? GetShortDirectoryName()
     {
-        return System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(FullPath));
+        return System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(StringPath));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string GetExtension()
     {
-        return System.IO.Path.GetExtension(FullPath);
+        return System.IO.Path.GetExtension(StringPath);
     }
 
     public Path ConvertToDirectory()
     {
         if (this.IsFile)
         {
-            return new Path(this.FullPath + System.IO.Path.DirectorySeparatorChar);
+            return new Path(this.StringPath + System.IO.Path.DirectorySeparatorChar);
         }
 
         return this;
@@ -158,7 +158,7 @@ public readonly struct Path
 
     public override string ToString()
     {
-        return $"Type ´{_pathType}´ Path ´{FullPath}´";
+        return $"Type ´{_pathType}´ Path ´{StringPath}´";
     }
 
 
@@ -179,12 +179,12 @@ public readonly struct Path
 
     public static bool operator ==(in Path a, in Path b)
     {
-        return a.FullPath == b.FullPath;
+        return a.StringPath == b.StringPath;
     }
 
     public static bool operator !=(in Path a, in Path b)
     {
-        return !(a.FullPath == b.FullPath);
+        return !(a.StringPath == b.StringPath);
     }
 
     public override bool Equals(object? obj)
@@ -199,6 +199,6 @@ public readonly struct Path
 
     public override int GetHashCode()
     {
-        return FullPath.GetHashCode();
+        return StringPath.GetHashCode();
     }
 }
