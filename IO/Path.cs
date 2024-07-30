@@ -167,7 +167,7 @@ public readonly struct Path
         return Path.Combine(path1.GetPath(), path2.GetPath());
     }
 
-    public static explicit operator Path(string a)
+    public static implicit operator Path(string a)
     {
         return new Path(a);
     }
