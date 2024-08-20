@@ -8,7 +8,7 @@ public readonly struct Result
         Messages = null;
     }
 
-    private Result(params string[] messages)
+    private Result(params string[]? messages)
     {
         IsSuccess = false;
         Messages = messages;
@@ -31,7 +31,7 @@ public readonly struct Result
         }
     }
 
-    public static Result CreateFailure(params string[] errors)
+    public static Result CreateFailure(params string[]? errors)
     {
         return new Result(errors);
     }
