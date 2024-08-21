@@ -57,7 +57,7 @@ public readonly struct Result<T>
         Messages = null;
     }
 
-    private Result(params string[] messages)
+    private Result(params string[]? messages)
     {
         Value = default(T);
         IsSuccess = false;
@@ -88,7 +88,7 @@ public readonly struct Result<T>
         return IsSuccess ? Result.CreateSuccess() : Result.CreateFailure(Messages);
     }
     
-    public static Result<T> CreateFailure(params string[] errors)
+    public static Result<T> CreateFailure(params string[]? errors)
     {
 // #if DEBUG
 //         System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
