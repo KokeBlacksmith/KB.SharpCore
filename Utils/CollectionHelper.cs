@@ -54,7 +54,7 @@ public static class CollectionHelper
 
     public static int IndexOf<T>(IEnumerable<T> enumerable, T itemToFind)
     {
-        var index = 0;
+        int index = 0;
         foreach (T item in enumerable)
         {
             if (item?.Equals(itemToFind) ?? false)

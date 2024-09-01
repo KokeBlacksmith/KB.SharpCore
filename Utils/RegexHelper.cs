@@ -7,25 +7,25 @@ public static class RegexHelper
 {
     public static string GetMatch(string input, string pattern)
     {
-        var match = Regex.Match(input, pattern);
+        Match match = Regex.Match(input, pattern);
         return match.Success ? match.Value : String.Empty;
     }
 
     public static string GetMatch(string input, string pattern, int group)
     {
-        var match = Regex.Match(input, pattern);
+        Match match = Regex.Match(input, pattern);
         return match.Success ? match.Groups[group].Value : String.Empty;
     }
 
     public static string[] GetMatches(string input, string pattern)
     {
-        var matches = Regex.Matches(input, pattern);
+        MatchCollection matches = Regex.Matches(input, pattern);
         return matches.Cast<Match>().Select(m => m.Value).ToArray();
     }
 
     public static string[] GetMatches(string input, string pattern, int group)
     {
-        var matches = Regex.Matches(input, pattern);
+        MatchCollection matches = Regex.Matches(input, pattern);
         return matches.Cast<Match>().Select(m => m.Groups[group].Value).ToArray();
     }
 
@@ -134,7 +134,7 @@ public static class RegexHelper
 
         public static bool IsBetween(string value, string min, string max, CultureInfo cultureInfo)
         {
-            if(IsNumeric(value, cultureInfo) && IsNumeric(min, cultureInfo) && IsNumeric(max, cultureInfo))
+            if (IsNumeric(value, cultureInfo) && IsNumeric(min, cultureInfo) && IsNumeric(max, cultureInfo))
             {
                 return Double.Parse(value, cultureInfo) >= Double.Parse(min, cultureInfo) && Double.Parse(value, cultureInfo) <= Double.Parse(max, cultureInfo);
             }

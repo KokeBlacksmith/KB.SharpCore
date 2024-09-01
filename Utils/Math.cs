@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 
 namespace KB.SharpCore.Utils;
@@ -8,8 +7,8 @@ public static class Math
 {
     public const double PI = System.Math.PI;
     public const double PI2 = System.Math.PI * 2.0d;
-    public const double PIHalf = System.Math.PI * 0.5d;
-    public const double PIQuarter = System.Math.PI * 0.25d;
+    public const double PI_HALF = System.Math.PI * 0.5d;
+    public const double PI_QUARTER = System.Math.PI * 0.25d;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsBetween<T>(this T item, in T start, in T end)
@@ -112,7 +111,7 @@ public static class Math
 
         // Check where the pin is located in the node. It can be top, bottom, left or right.
         // Depending on that, we have to set the angle of the connection.
-        if (angle.IsBetween(KB.SharpCore.Utils.Math.PIQuarter, (3 * System.Math.PI) / 4.0d))
+        if (angle.IsBetween(KB.SharpCore.Utils.Math.PI_QUARTER, (3 * System.Math.PI) / 4.0d))
         {
             //Top
             return 0;

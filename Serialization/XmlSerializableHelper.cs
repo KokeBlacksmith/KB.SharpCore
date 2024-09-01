@@ -32,7 +32,7 @@ public static class XmlSerializableHelper
             try
             {
                 XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
-                return Result<T>.CreateSuccess((T)xmlSerializer.Deserialize(fileStream));
+                return Result<T>.CreateSuccess((T)xmlSerializer.Deserialize(fileStream)!);
             }
             catch (Exception e)
             {
@@ -45,7 +45,9 @@ public static class XmlSerializableHelper
         where T : class
     {
         if (toFillObject == null)
+        {
             throw new ArgumentNullException(nameof(toFillObject));
+        }
 
         Result<T> deserializedResult = XmlSerializableHelper.Load<T>(path);
         if (deserializedResult.IsSuccess)

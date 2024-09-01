@@ -87,19 +87,19 @@ public static class DataContractSerializableHelper
                     {
                         using(XmlReader xmlReader = XmlReader.Create(fileStream))
                         {
-                            return Result<T>.CreateSuccess((T)dataContractSerializer.ReadObject(xmlReader));
+                            return Result<T>.CreateSuccess((T)dataContractSerializer.ReadObject(xmlReader)!);
                         }
                     }
                     case ESerializationType.Json:
                     {
                         using (XmlDictionaryReader jsonReader = JsonReaderWriterFactory.CreateJsonReader(fileStream, Encoding.UTF8, XmlDictionaryReaderQuotas.Max, null))
                         {
-                            return Result<T>.CreateSuccess((T)dataContractSerializer.ReadObject(jsonReader));
+                            return Result<T>.CreateSuccess((T)dataContractSerializer.ReadObject(jsonReader)!);
                         }
                     }
                     case ESerializationType.Binary:
                     {
-                        return Result<T>.CreateSuccess((T)dataContractSerializer.ReadObject(fileStream));                        
+                        return Result<T>.CreateSuccess((T)dataContractSerializer.ReadObject(fileStream)!);
                     }
                     default:
                         throw new ArgumentOutOfRangeException(nameof(serializationType), serializationType, null);

@@ -41,7 +41,7 @@ public class MultipleUserAction : IUserAction
     /// </summary>
     public void Do()
     {
-        foreach (var userAction in _userActions)
+        foreach (IUserAction userAction in _userActions)
         {
             userAction.Do();
         }
@@ -52,7 +52,7 @@ public class MultipleUserAction : IUserAction
     /// </summary>
     public void Undo()
     {
-        foreach (var userAction in _userActions)
+        foreach (IUserAction userAction in _userActions)
         {
             userAction.Undo();
         }

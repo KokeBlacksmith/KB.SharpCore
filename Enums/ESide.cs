@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace KB.SharpCore.Enums
+﻿namespace KB.SharpCore.Enums;
+public enum ESide
 {
-    public enum ESide
-    {
-        Left,
-        Right,
-        Top,
-        Bottom,
-    }
+    Left,
+    Right,
+    Top,
+    Bottom,
 }

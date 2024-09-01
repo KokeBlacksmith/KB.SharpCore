@@ -9,13 +9,13 @@ public ref struct StackTraceData
     public StackTraceData()
     {
         _stackTrace = new StackTrace();
-        _stackFrame = _stackTrace.GetFrame(0);
+        _stackFrame = _stackTrace.GetFrame(0)!;
     }
     
     public StackTraceData(Exception ex)
     {
         _stackTrace = new StackTrace(ex);
-        _stackFrame = _stackTrace.GetFrame(0);
+        _stackFrame = _stackTrace.GetFrame(0)!;
     }
 
     public string? FileName
