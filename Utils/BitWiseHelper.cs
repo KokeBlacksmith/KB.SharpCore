@@ -96,7 +96,37 @@ public static class BitWiseHelper
         return number ^ (1 << bit);
     }
 
-    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IEnumerable<TEnum> EnumerateActiveFlags<TEnum>(TEnum enumValue)
+        where TEnum : Enum
+    {
+        int value = Convert.ToInt32(enumValue);
+        foreach (TEnum flag in Enum.GetValues(typeof(TEnum)))
+        {
+            int flagValue = Convert.ToInt32(flag);
+            if (BitWiseHelper.HasFlag(value, flagValue))
+            {
+                yield return flag;
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IEnumerable<string> EnumerateActiveFlagsNames<TEnum>(TEnum enumValue)
+        where TEnum : Enum
+    {
+        foreach (TEnum flag in EnumerateActiveFlags(enumValue))
+        {
+            string? flagName = Enum.GetName(typeof(TEnum), flag);
+            if (!string.IsNullOrEmpty(flagName))
+            {
+                yield return flagName;
+            }
+        }
+    }
+
+
     private static void s_AssertEnumCheck<TEnum>(TEnum enumValue, TEnum flag)
         where TEnum : Enum
     {
