@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace KB.SharpCore.Synchronization;
+﻿namespace KB.SharpCore.Synchronization;
 
 /// <summary>
 /// resource acquisition is initialization

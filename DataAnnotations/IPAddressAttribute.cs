@@ -10,9 +10,6 @@ namespace KB.SharpCore.DataAnnotations;
     AllowMultiple = false)]
 public class IPAddressAttribute : ValidationAttribute
 {
-    private bool _isIPv4;
-    private bool _isIPv6;
-
     /// <summary>
     ///     Default constructor.
     /// </summary>
@@ -47,7 +44,7 @@ public class IPAddressAttribute : ValidationAttribute
         string? ip = value as string;
 
         bool result = false;
-        if (String.IsNullOrWhiteSpace(ip))
+        if (string.IsNullOrWhiteSpace(ip))
         {
             return false;
         }
@@ -56,12 +53,14 @@ public class IPAddressAttribute : ValidationAttribute
         {
             result = RegexHelper.Network.IsIPv4(ip!);
         }
-
-        if (!result && _isIPv6)
+        else if (!result && _isIPv6)
         {
             result = RegexHelper.Network.IsIPv6(ip!);
         }
 
         return result;
     }
+
+    private readonly bool _isIPv4;
+    private readonly bool _isIPv6;
 }

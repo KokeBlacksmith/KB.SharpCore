@@ -52,9 +52,9 @@ public class MultipleUserAction : IUserAction
     /// </summary>
     public void Undo()
     {
-        foreach (IUserAction userAction in _userActions)
+        for (int i = _userActions.Count - 1; i >= 0; --i)
         {
-            userAction.Undo();
+            _userActions[i].Undo();
         }
     }
     

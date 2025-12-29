@@ -1,216 +1,118 @@
-﻿using KB.SharpCore.Utils;
-
-namespace KB.SharpCore.DesignPatterns.UserAction;
+﻿namespace KB.SharpCore.DesignPatterns.UserAction;
 
 /// <summary>
 /// Handle Do / Undo actions.
 /// </summary>
-public class UserActionInvoker
+public sealed class UserActionInvoker
 {
-    // TODO: Search for a better way to do this.
-    public static bool IsUserActionsPaused = false;
-
-    public UserActionInvoker(uint capacity = 100)
+    public UserActionInvoker(int capacity = 100)
     {
-        _userActions = new IUserAction[capacity];
-    }
-
-    private readonly IUserAction?[] _userActions;
-    private int _currentIndex = -1;
-    private int _count = 0;
-
-    public bool AddUserAction(IUserAction userAction)
-    {
-        if(IsUserActionsPaused)
+        if (capacity <= 0)
         {
-            return false;
+            throw new ArgumentOutOfRangeException(nameof(capacity));
         }
 
-        if(_userActions.Length <= _count + 1)
+        _capacity = capacity;
+        _history = new List<IUserAction>(capacity);
+    }
+
+    public bool CanUndo => _index >= 0;
+    public bool CanRedo => _index < _history.Count - 1;
+    public bool IsPaused => _pauseCount > 0;
+    public bool IsModified => _index != _savedIndex;
+
+    public void Execute(IUserAction action)
+    {
+        if (action is null)
         {
-            // We will max the capacity of the array.
-            RemoveUserActionAtIndex(0);
+            throw new ArgumentNullException(nameof(action));
         }
 
-        _userActions[_count] = userAction;
-        _currentIndex++;
-        _count++;
-        return true;
-    }
-
-    public void Undo()
-    {
-        if (CanUndo)
-        {
-            _userActions[_currentIndex]!.Undo();
-            _currentIndex--;
-        }
-    }
-
-    public void Redo()
-    {
-        if (CanRedo)
-        {
-            _currentIndex++;
-            _userActions[_currentIndex]!.Do();
-        }
-    }
-
-    public void Clear()
-    {
-        for (int i = 0; i < _userActions.Length - 1; ++i)
-        {
-            _userActions[i] = default(IUserAction);
-        }
-
-        _currentIndex = -1;
-        _count = 0;
-    }
-
-    public bool CanUndo => _currentIndex >= 0;
-
-    public bool CanRedo => _currentIndex < _count - 1;
-
-    public int Count => _count;
-
-    public int CurrentIndex =>_currentIndex;
-
-    public IUserAction? CurrentUserAction
-    {
-        get
-        {
-            if(Count > 0)
-            {
-                return _userActions[_currentIndex];
-            }
-
-            return null;
-        }
-    }
-
-    public IUserAction? GetUserActionAtIndex(uint index)
-    {
-        _ValidateIndex((int)index);
-        return _userActions[index];
-    }
-
-    public IEnumerable<IUserAction> GetUserActions()
-    {
-        return _userActions.Where(action => action != null)!;
-    }
-
-    public void SetUserActions(IEnumerable<IUserAction> userActions)
-    {
-        Clear();
-        foreach(IUserAction action in userActions)
-        {
-            AddUserAction(action);
-        }
-    }
-
-    public void SetCurrentIndex(uint index)
-    {
-        _ValidateIndex((int)index);
-        _currentIndex = (int)index;
-    }
-
-    public void SetCurrentUserAction(IUserAction userAction)
-    {
-        _userActions[_currentIndex] = userAction;
-    }
-
-    public void SetUserActionAtIndex(uint index, IUserAction userAction)
-    {
-        _ValidateIndex((int)index);
-        _userActions[index] = userAction;
-    }
-
-    public void RemoveUserActionAtIndex(uint index)
-    {
-        _ValidateIndex((int)index);
-
-        if (_userActions[index] == null)
+        action.Do();
+        if (IsPaused)
         {
             return;
         }
 
-        _userActions[index] = null;
-
-        for (int i = (int)index; i < _userActions.Length - 2; ++i)
+        // drop future redo steps
+        if (_index < _history.Count - 1)
         {
-            _userActions[i] = _userActions[i + 1];
+            _history.RemoveRange(_index + 1, _history.Count - (_index + 1));
         }
 
-        _userActions[_userActions.Length - 1] = default(IUserAction);
+        // append
+        _history.Add(action);
+        _index++;
 
-        if (index <= _currentIndex)
+        // enforce capacity (evict oldest)
+        if (_history.Count > _capacity)
         {
-            _currentIndex--;
+            _history.RemoveAt(0);
+            _index--;
+            _savedIndex = Math.Max(_savedIndex, -1);
         }
-
-        _count--;
     }
 
-    public void RemoveUserAction(IUserAction userAction)
+    public void Undo()
     {
-        for(uint i = 0; i < _userActions.Length - 1; ++i)
+        if (!CanUndo)
         {
-            if (_userActions[i] == userAction)
+            return;
+        }
+
+        _history[_index].Undo();
+        _index--;
+    }
+
+    public void Redo()
+    {
+        if (!CanRedo)
+        {
+            return;
+        }
+
+        _index++;
+        _history[_index].Do();
+    }
+
+    public void Clear()
+    {
+        _history.Clear();
+        _index = -1;
+        _savedIndex = -1;
+    }
+
+    public IDisposable PauseRecording()
+    {
+        _pauseCount++;
+        return new DisposableAction(() => _pauseCount--);
+    }
+
+    public void MarkSaved()
+    {
+        _savedIndex = _index;
+    }
+
+    private sealed class DisposableAction : IDisposable
+    {
+        private readonly Action _onDispose;
+        private bool _disposed;
+        public DisposableAction(Action onDispose) => _onDispose = onDispose;
+        public void Dispose()
+        {
+            if (_disposed)
             {
-                RemoveUserActionAtIndex(i);
                 return;
             }
-        }
 
-        throw new ArgumentException("User action not found.", nameof(userAction));
-    }
-
-    public void RemoveUserActionsRange(int index, int count)
-    {
-        _ValidateIndex(index);
-
-        if (index + count > _count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), "Index + count must be less than the count of user actions.");
-        }
-
-        for (int i = index; i < index + count; ++i)
-        {
-            _userActions[i] = default(IUserAction);
-        }
-
-        for (int i = index; i < index + count; ++i)
-        {
-            _userActions[i] = _userActions[i + count];
-        }
-
-        if(index <= _currentIndex)
-        {
-            _currentIndex -= count;
-        }
-
-        _count -= count;
-    }
-
-    public void RemoveUserActionsRange(IUserAction userAction, int count)
-    {
-        int index  = CollectionHelper.IndexOf(_userActions, userAction);
-        if(index >= 0)
-        {
-            RemoveUserActionsRange(index, count);
+            _disposed = true;
+            _onDispose();
         }
     }
 
-    private void _ValidateIndex(int index)
-    {
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), "Index must be greater than zero.");
-        }
-
-        if (index >= _count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), "Index must be less than the count of user actions.");
-        }
-    }
+    private readonly List<IUserAction> _history;
+    private readonly int _capacity;
+    private int _index = -1;
+    private int _pauseCount;
+    private int _savedIndex = -1;
 }
