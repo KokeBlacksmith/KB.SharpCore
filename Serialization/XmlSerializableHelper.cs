@@ -80,7 +80,7 @@ public static class XmlSerializableHelper
     {
         try
         {
-            // Create an XmlSerializer for your object type
+            // Create an XmlSerializer for the object type
             XmlSerializer serializer = new XmlSerializer(typeof(T));
 
             // Create a StringReader to read the XML data
