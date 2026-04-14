@@ -60,6 +60,11 @@ public readonly struct Path
 
     public static Path Empty { get; } = new Path();
 
+    public static Path GetTempPath()
+    {
+        return new Path(System.IO.Path.GetTempPath()).ConvertToDirectory();
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Path Combine(params string[] paths)
     {
@@ -68,8 +73,7 @@ public readonly struct Path
             throw new ArgumentNullException(nameof(paths));
         }
 
-        bool endsWithSeparator = !System.IO.Path.HasExtension(paths[^1]) && !paths[^1].EndsWith(System.IO.Path.DirectorySeparatorChar);
-        return new Path(System.IO.Path.Combine(paths) + (endsWithSeparator ? System.IO.Path.DirectorySeparatorChar.ToString() : default(string)));
+        return new Path(System.IO.Path.Combine(paths));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -126,6 +130,12 @@ public readonly struct Path
     public string GetFileName()
     {
         return _pathType == EPathType.File ? System.IO.Path.GetFileName(StringPath) : String.Empty;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public string GetFileNameWithoutExtension()
+    {
+        return _pathType == EPathType.File ? System.IO.Path.GetFileNameWithoutExtension(StringPath) : String.Empty;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

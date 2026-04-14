@@ -46,6 +46,22 @@ public readonly struct Result
     {
         return new Result(true);
     }
+
+    public static Result Aggregate(IEnumerable<Result> results)
+    {
+        ArgumentNullException.ThrowIfNull(results);
+
+        List<string> errors = new List<string>();
+        foreach (Result result in results)
+        {
+            if (result.IsFailure && result.Messages is not null)
+            {
+                errors.AddRange(result.Messages.Where(message => !string.IsNullOrWhiteSpace(message))!);
+            }
+        }
+
+        return errors.Count == 0 ? CreateSuccess() : CreateFailure(errors.ToArray());
+    }
 }
 
 public readonly struct Result<T>
