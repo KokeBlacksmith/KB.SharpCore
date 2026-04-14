@@ -5,6 +5,9 @@
 /// </summary>
 public sealed class UserActionInvoker
 {
+    public event EventHandler<UserActionExecutedEventArgs>? UserActionExecuted;
+    public event EventHandler? Saved;
+
     public UserActionInvoker(int capacity = 100)
     {
         if (capacity <= 0)
@@ -51,6 +54,13 @@ public sealed class UserActionInvoker
             _index--;
             _savedIndex = Math.Max(_savedIndex, -1);
         }
+
+        UserActionExecuted?.Invoke(this, new UserActionExecutedEventArgs(action, isUndo: false, isRedo: false));
+    }
+
+    public void ExecuteUserAction(IUserAction action)
+    {
+        Execute(action);
     }
 
     public void Undo()
@@ -60,8 +70,15 @@ public sealed class UserActionInvoker
             return;
         }
 
-        _history[_index].Undo();
+        IUserAction action = _history[_index];
+        action.Undo();
         _index--;
+        UserActionExecuted?.Invoke(this, new UserActionExecutedEventArgs(action, isUndo: true, isRedo: false));
+    }
+
+    public void UnDo()
+    {
+        Undo();
     }
 
     public void Redo()
@@ -72,7 +89,14 @@ public sealed class UserActionInvoker
         }
 
         _index++;
-        _history[_index].Do();
+        IUserAction action = _history[_index];
+        action.Do();
+        UserActionExecuted?.Invoke(this, new UserActionExecutedEventArgs(action, isUndo: false, isRedo: true));
+    }
+
+    public void ReDo()
+    {
+        Redo();
     }
 
     public void Clear()
@@ -91,6 +115,7 @@ public sealed class UserActionInvoker
     public void MarkSaved()
     {
         _savedIndex = _index;
+        Saved?.Invoke(this, EventArgs.Empty);
     }
 
     private sealed class DisposableAction : IDisposable

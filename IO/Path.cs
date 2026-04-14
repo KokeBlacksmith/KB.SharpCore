@@ -58,7 +58,7 @@ public readonly struct Path
         return false;
     }
 
-    public static Path Empty { get; } = new Path(String.Empty);
+    public static Path Empty { get; } = new Path();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Path Combine(params string[] paths)
